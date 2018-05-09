@@ -11,6 +11,7 @@ import {
   setIn,
   setNestedObjectValues,
 } from './utils';
+import ReactDOM from 'react-dom';
 
 /**
  * Values of fields in the form
@@ -356,7 +357,9 @@ export class Formik<ExtraProps = {}, Values = object> extends React.Component<
   };
 
   setValues = (values: FormikValues) => {
-    this.setState({ values }, () => {
+    ReactDOM.unstable_batchedUpdates(() => {
+      this.setState({ values });
+
       if (this.props.validateOnChange) {
         this.runValidations(values);
       }
@@ -510,17 +513,17 @@ export class Formik<ExtraProps = {}, Values = object> extends React.Component<
     shouldValidate: boolean = true
   ) => {
     // Set form field by name
-    this.setState(
-      prevState => ({
-        ...prevState,
-        values: setIn(prevState.values, field, value),
-      }),
-      () => {
-        if (this.props.validateOnChange && shouldValidate) {
-          this.runValidations(this.state.values);
-        }
+    const valuesState = (prevState: any) => ({
+      values: setIn(prevState.values, field, value),
+    });
+
+    ReactDOM.unstable_batchedUpdates(() => {
+      this.setState(valuesState);
+
+      if (this.props.validateOnChange && shouldValidate) {
+        this.runValidations(valuesState(this.state).values);
       }
-    );
+    });
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement> | undefined) => {
