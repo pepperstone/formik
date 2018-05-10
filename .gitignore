@@ -6,7 +6,6 @@ coverage
 next.d.ts
 legacy.d.ts
 test
-src
 website
 docs
 examples

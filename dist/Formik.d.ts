@@ -1,19 +1,17 @@
 /// <reference types="react" />
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
+export declare type Extends<A, B> = A extends B ? true : false;
+export declare type Tree<Children, Leaf> = {
+  [K in keyof Children]?: Children[K] extends object
+    ? false extends Extends<Children[K], object> ? any : Tree<Children[K], Leaf>
+    : Leaf
+};
 export interface FormikValues {
   [field: string]: any;
 }
-export declare type FormikErrors<Values> = {
-  [K in keyof Values]?: Values[K] extends object
-    ? FormikErrors<Values[K]>
-    : string
-};
-export declare type FormikTouched<Values> = {
-  [K in keyof Values]?: Values[K] extends object
-    ? FormikTouched<Values[K]>
-    : boolean
-};
+export declare type FormikErrors<Values> = Tree<Values, string>;
+export declare type FormikTouched<Values> = Tree<Values, boolean>;
 export interface FormikState<Values> {
   values: Values;
   error?: any;
@@ -164,9 +162,9 @@ export declare class Formik<
       initialValues: Values;
       setStatus(status?: any): void;
       setError(e: any): void;
-      setErrors(errors: FormikErrors<Values>): void;
+      setErrors(errors: Tree<Values, string>): void;
       setSubmitting(isSubmitting: boolean): void;
-      setTouched(touched: FormikTouched<Values>): void;
+      setTouched(touched: Tree<Values, boolean>): void;
       setValues(values: Values): void;
       setFieldValue(
         field: keyof Values,
@@ -227,8 +225,8 @@ export declare class Formik<
       ): void;
       values: any;
       error?: any;
-      errors: FormikErrors<any>;
-      touched: FormikTouched<any>;
+      errors: Tree<any, string>;
+      touched: Tree<any, boolean>;
       isSubmitting: boolean;
       status?: any;
       submitCount: number;
@@ -241,8 +239,8 @@ export declare class Formik<
     nextProps: Readonly<FormikConfig<Values> & ExtraProps>
   ): void;
   componentWillMount(): void;
-  setErrors: (errors: FormikErrors<Values>) => void;
-  setTouched: (touched: FormikTouched<Values>) => void;
+  setErrors: (errors: Tree<Values, string>) => void;
+  setTouched: (touched: Tree<Values, boolean>) => void;
   setValues: (values: FormikValues) => void;
   setStatus: (status?: any) => void;
   setError: (error: any) => void;
@@ -291,9 +289,9 @@ export declare class Formik<
     initialValues: Values;
     setStatus(status?: any): void;
     setError(e: any): void;
-    setErrors(errors: FormikErrors<Values>): void;
+    setErrors(errors: Tree<Values, string>): void;
     setSubmitting(isSubmitting: boolean): void;
-    setTouched(touched: FormikTouched<Values>): void;
+    setTouched(touched: Tree<Values, boolean>): void;
     setValues(values: Values): void;
     setFieldValue(
       field: keyof Values,
@@ -354,8 +352,8 @@ export declare class Formik<
     ): void;
     values: any;
     error?: any;
-    errors: FormikErrors<any>;
-    touched: FormikTouched<any>;
+    errors: Tree<any, string>;
+    touched: Tree<any, boolean>;
     isSubmitting: boolean;
     status?: any;
     submitCount: number;

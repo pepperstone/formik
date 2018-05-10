@@ -5,7 +5,6 @@ import cloneDeep from 'lodash.clonedeep';
 import { bool, oneOfType, func, object, node, string } from 'prop-types';
 import isEqual from 'react-fast-compare';
 import warning from 'warning';
-import ReactDOM from 'react-dom';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
 function getIn(obj, key, def, p) {
@@ -99,8 +98,7 @@ var Formik = (function (_super) {
             });
         };
         _this.setValues = function (values) {
-            ReactDOM.unstable_batchedUpdates(function () {
-                _this.setState({ values: values });
+            _this.setState({ values: values }, function () {
                 if (_this.props.validateOnChange) {
                     _this.runValidations(values);
                 }
@@ -194,13 +192,9 @@ var Formik = (function (_super) {
         };
         _this.setFieldValue = function (field, value, shouldValidate) {
             if (shouldValidate === void 0) { shouldValidate = true; }
-            var valuesState = function (prevState) { return ({
-                values: setIn(prevState.values, field, value),
-            }); };
-            ReactDOM.unstable_batchedUpdates(function () {
-                _this.setState(valuesState);
+            _this.setState(function (prevState) { return (__assign({}, prevState, { values: setIn(prevState.values, field, value) })); }, function () {
                 if (_this.props.validateOnChange && shouldValidate) {
-                    _this.runValidations(valuesState(_this.state).values);
+                    _this.runValidations(_this.state.values);
                 }
             });
         };

@@ -11,7 +11,6 @@ var cloneDeep = _interopDefault(require('lodash.clonedeep'));
 var PropTypes = require('prop-types');
 var isEqual = _interopDefault(require('react-fast-compare'));
 var warning = _interopDefault(require('warning'));
-var ReactDOM = _interopDefault(require('react-dom'));
 var hoistNonReactStatics = _interopDefault(require('hoist-non-react-statics'));
 
 function getIn(obj, key, def, p) {
@@ -105,8 +104,7 @@ var Formik = (function (_super) {
             });
         };
         _this.setValues = function (values) {
-            ReactDOM.unstable_batchedUpdates(function () {
-                _this.setState({ values: values });
+            _this.setState({ values: values }, function () {
                 if (_this.props.validateOnChange) {
                     _this.runValidations(values);
                 }
@@ -200,13 +198,9 @@ var Formik = (function (_super) {
         };
         _this.setFieldValue = function (field, value, shouldValidate) {
             if (shouldValidate === void 0) { shouldValidate = true; }
-            var valuesState = function (prevState) { return ({
-                values: setIn(prevState.values, field, value),
-            }); };
-            ReactDOM.unstable_batchedUpdates(function () {
-                _this.setState(valuesState);
+            _this.setState(function (prevState) { return (tslib_1.__assign({}, prevState, { values: setIn(prevState.values, field, value) })); }, function () {
                 if (_this.props.validateOnChange && shouldValidate) {
-                    _this.runValidations(valuesState(_this.state).values);
+                    _this.runValidations(_this.state.values);
                 }
             });
         };
